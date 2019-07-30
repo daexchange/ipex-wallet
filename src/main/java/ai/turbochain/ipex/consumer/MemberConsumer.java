@@ -125,30 +125,33 @@ public class MemberConsumer {
 			wallet.setBalance(new BigDecimal(0));
 			wallet.setFrozenBalance(new BigDecimal(0));
 			wallet.setAddress("");
-//            if(coin.getEnableRpc() == BooleanEnum.IS_TRUE) {
-//                String account = "U" + json.getLong("uid");
-//                //远程RPC服务URL,后缀为币种单位
-//                String serviceName = "SERVICE-RPC-" + coin.getUnit();
-//                try{
-//                    String url = "http://" + serviceName + "/rpc/address/{account}";
-//                    ResponseEntity<MessageResult> result = restTemplate.getForEntity(url, MessageResult.class, account);
-//                    logger.info("remote call:service={},result={}", serviceName, result);
-//                    if (result.getStatusCode().value() == 200) {
-//                        MessageResult mr = result.getBody();
-//                        logger.info("mr={}", mr);
-//                        if (mr.getCode() == 0) {
-//                            //返回地址成功，调用持久化
-//                            String address = (String) mr.getData();
-//                            wallet.setAddress(address);
-//                        }
-//                    }
-//                }
-//                catch (Exception e){
-//                    logger.error("call {} failed,error={}",serviceName,e.getMessage());
-//                    wallet.setAddress("");
-//                }
-//            }
-//            else{
+            if(coin.getEnableRpc() == BooleanEnum.IS_TRUE) {
+                String account = "U" + json.getLong("uid");
+                //远程RPC服务URL,后缀为币种单位
+                String serviceName = "SERVICE-RPC-" + coin.getUnit();
+                try{
+                    String url = "http://" + serviceName + "/rpc/address/{account}";
+                    ResponseEntity<MessageResult> result = restTemplate.getForEntity(url, MessageResult.class, account);
+                    logger.info("remote call:service={},result={}", serviceName, result);
+                    if (result.getStatusCode().value() == 200) {
+                        MessageResult mr = result.getBody();
+                        logger.info("mr={}", mr);
+                        if (mr.getCode() == 0) {
+                            //返回地址成功，调用持久化
+                            String address = (String) mr.getData();
+                            wallet.setAddress(address);
+                        }
+                    }
+                }
+                catch (Exception e){
+                    logger.error("call {} failed,error={}",serviceName,e.getMessage());
+                    wallet.setAddress("");
+                }
+            } else {
+                wallet.setAddress("");
+            }
+            
+            
 //                wallet.setAddress("");
 //            }
 			// 保存
