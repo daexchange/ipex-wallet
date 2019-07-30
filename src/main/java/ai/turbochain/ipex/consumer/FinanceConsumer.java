@@ -80,7 +80,8 @@ public class FinanceConsumer {
             Coin coin = coinService.findByUnit(record.key());
             logger.info("coin = {}",coin.toString());
             if (coin != null && coin.getCanAutoWithdraw() == BooleanEnum.IS_TRUE) {
-                BigDecimal minerFee = coin.getMinerFee();
+            	BigDecimal minerFee = json.getBigDecimal("fee");           	
+                //BigDecimal minerFee = coin.getMinerFee();
                 MessageResult result = restTemplate.getForObject(url,
                         MessageResult.class, json.getString("address"), json.getBigDecimal("arriveAmount"), minerFee);
                 logger.info("=========================rpc 结束================================");
