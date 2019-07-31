@@ -2,6 +2,7 @@ package ai.turbochain.ipex.consumer;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -61,6 +62,9 @@ public class MemberConsumer {
 	private MemberTransactionService memberTransactionService;
 	@Autowired
 	private ESUtils esUtils;
+	
+	@Autowired
+	private ExecutorService executorService;
 
 	/**
 	 * 重置用户钱包地址
@@ -115,6 +119,23 @@ public class MemberConsumer {
 		if (json == null) {
 			return;
 		}
+		
+		afterRegister(json);
+
+	}
+	
+	/**
+	 * 注册成功后的操作
+	 */
+	public void afterRegister(JSONObject json){
+        executorService.execute(new Runnable() {
+            public void run() {
+            	registerCoin(json);
+            }
+        });
+    }
+	
+	public void registerCoin(JSONObject json ) {
 		// 获取所有支持的币种
 		List<Coin> coins = coinService.findAll();
 		for (Coin coin : coins) {
@@ -152,8 +173,8 @@ public class MemberConsumer {
             }
             
             
-//                wallet.setAddress("");
-//            }
+//		                wallet.setAddress("");
+//		            }
 			// 保存
 			memberWalletService.save(wallet);
 
@@ -196,6 +217,6 @@ public class MemberConsumer {
 			memberTransaction.setRealFee("0");
 			memberTransaction = memberTransactionService.save(memberTransaction);
 		}
-
 	}
+	
 }
