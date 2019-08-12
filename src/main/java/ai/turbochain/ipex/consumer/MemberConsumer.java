@@ -38,7 +38,6 @@ import ai.turbochain.ipex.service.MemberWalletService;
 import ai.turbochain.ipex.service.RewardActivitySettingService;
 import ai.turbochain.ipex.service.RewardRecordService;
 import ai.turbochain.ipex.util.BigDecimalUtils;
-import ai.turbochain.ipex.util.GeneratorUtil;
 import ai.turbochain.ipex.util.MessageResult;
 
 @Component
