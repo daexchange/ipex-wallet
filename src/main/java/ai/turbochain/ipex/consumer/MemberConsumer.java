@@ -120,7 +120,6 @@ public class MemberConsumer {
 		}
 		
 		afterRegister(json);
-
 	}
 	
 	/**
@@ -171,9 +170,6 @@ public class MemberConsumer {
                 wallet.setAddress("");
             }
             
-            
-//		                wallet.setAddress("");
-//		            }
 			// 保存
 			memberWalletService.save(wallet);
 
