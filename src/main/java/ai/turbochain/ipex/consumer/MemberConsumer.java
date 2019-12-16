@@ -60,9 +60,6 @@ public class MemberConsumer {
 	@Autowired
 	private MemberTransactionService memberTransactionService;
 	@Autowired
-	private ESUtils esUtils;
-	
-	@Autowired
 	private ExecutorService executorService;
 
 	/**
@@ -100,7 +97,6 @@ public class MemberConsumer {
 			}
 			memberWalletService.save(memberWallet);
 		}
-
 	}
 
 	/**
@@ -118,7 +114,6 @@ public class MemberConsumer {
 		if (json == null) {
 			return;
 		}
-		
 		afterRegister(json);
 	}
 	

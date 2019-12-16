@@ -87,15 +87,9 @@
                     </resource>
                 </resources>
             </build>
-            <!--<properties>
-                <project.profile>application</project.profile>
-            </properties>-->
         </profile>
         <profile>
             <id>test</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
             <build>
                 <resources>
                     <resource>
@@ -103,18 +97,9 @@
                     </resource>
                 </resources>
             </build>
-            <!--<properties>
-                <project.profile>application</project.profile>
-            </properties>-->
         </profile>
         <profile>
             <id>prod</id>
-            <!--<properties>
-                <project.profile>application-prod</project.profile>
-            </properties>-->
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
             <build>
                 <resources>
                     <resource>

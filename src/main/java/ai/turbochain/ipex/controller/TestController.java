@@ -16,7 +16,11 @@ import ai.turbochain.ipex.util.MessageResult;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-
+/**
+ * ipex wallet接口测试
+ * @author zmc
+ *
+ */
 @RestController
 @RequestMapping("test")
 public class TestController extends BaseController {
@@ -31,7 +35,7 @@ public class TestController extends BaseController {
         String serviceName = "SERVICE-RPC-" + unit.toUpperCase();
         String url = "http://" + serviceName + "/rpc/height";
         ResponseEntity<MessageResult> result = restTemplate.getForEntity(url, MessageResult.class);
-        System.out.print("remote call:service={},result={}" + serviceName + result);
+        logger.info("remote call:service={},result={}" + serviceName + result);
         return success(result);
     }
 
@@ -61,9 +65,4 @@ public class TestController extends BaseController {
         );
         return success(data);
     }
-    
-    
-    
-
-
 }
