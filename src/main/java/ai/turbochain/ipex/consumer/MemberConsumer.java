@@ -27,14 +27,15 @@ import ai.turbochain.ipex.entity.Member;
 import ai.turbochain.ipex.entity.MemberLegalCurrencyWallet;
 import ai.turbochain.ipex.entity.MemberTransaction;
 import ai.turbochain.ipex.entity.MemberWallet;
+import ai.turbochain.ipex.entity.OtcCoin;
 import ai.turbochain.ipex.entity.RewardActivitySetting;
 import ai.turbochain.ipex.entity.RewardRecord;
-import ai.turbochain.ipex.es.ESUtils;
 import ai.turbochain.ipex.service.CoinService;
 import ai.turbochain.ipex.service.MemberLegalCurrencyWalletService;
 import ai.turbochain.ipex.service.MemberService;
 import ai.turbochain.ipex.service.MemberTransactionService;
 import ai.turbochain.ipex.service.MemberWalletService;
+import ai.turbochain.ipex.service.OtcCoinService;
 import ai.turbochain.ipex.service.RewardActivitySettingService;
 import ai.turbochain.ipex.service.RewardRecordService;
 import ai.turbochain.ipex.util.BigDecimalUtils;
@@ -47,6 +48,8 @@ public class MemberConsumer {
 	private RestTemplate restTemplate;
 	@Autowired
 	private CoinService coinService;
+	@Autowired
+	private OtcCoinService otcCoinService;
 	@Autowired
 	private MemberWalletService memberWalletService;
 	@Autowired
@@ -167,16 +170,21 @@ public class MemberConsumer {
             
 			// 保存
 			memberWalletService.save(wallet);
-
+		}
+		
+		List<OtcCoin> otcCoins = otcCoinService.findAll();
+		
+		for (OtcCoin coin : otcCoins) {
 			MemberLegalCurrencyWallet memberLegalCurrencyWallet = new MemberLegalCurrencyWallet();
 
-			memberLegalCurrencyWallet.setCoin(coin);
+			memberLegalCurrencyWallet.setOtcCoin(coin);
 			memberLegalCurrencyWallet.setMemberId(json.getLong("uid"));
 			memberLegalCurrencyWallet.setBalance(new BigDecimal(0));
 			memberLegalCurrencyWallet.setFrozenBalance(new BigDecimal(0));
 
 			memberLegalCurrencyWalletService.save(memberLegalCurrencyWallet);
 		}
+		
 		// 注册活动奖励
 		RewardActivitySetting rewardActivitySetting = rewardActivitySettingService
 				.findByType(ActivityRewardType.REGISTER);
