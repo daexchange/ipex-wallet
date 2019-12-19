@@ -82,8 +82,15 @@ public class MemberConsumer {
 			Assert.notNull(memberWallet, "wallet null");
 			// String account = "U" + json.getLong("uid")+ GeneratorUtil.getNonceString(4);
 			String account = "U" + json.getLong("uid");
-			// 远程RPC服务URL,后缀为币种单位
-			String serviceName = "SERVICE-RPC-" + coin.getUnit();
+			String serviceName = "";
+			if (coin.getEnableRpc() == BooleanEnum.IS_TRUE) {
+				if (coin.getIsToken().isIs() == true && coin.getChainName() != null) {
+					// 远程RPC服务URL,后缀为币种单位
+					serviceName = "SERVICE-RPC-" + coin.getChainName();
+				} else {
+					serviceName = "SERVICE-RPC-" + coin.getUnit();
+				}
+			}
 			try {
 				String url = "http://" + serviceName + "/rpc/address/{account}";
 				ResponseEntity<MessageResult> result = restTemplate.getForEntity(url, MessageResult.class, account);
@@ -119,19 +126,22 @@ public class MemberConsumer {
 		}
 		afterRegister(json);
 	}
-	
+
 	/**
 	 * 注册成功后的操作
 	 */
-	public void afterRegister(JSONObject json){
-        executorService.execute(new Runnable() {
-            public void run() {
-            	registerCoin(json);
-            }
-        });
-    }
-	
-	public void registerCoin(JSONObject json ) {
+	public void afterRegister(JSONObject json) {
+		executorService.execute(new Runnable() {
+			public void run() {
+				registerCoin(json);
+			}
+		});
+	}
+
+	public void registerCoin(JSONObject json) {
+		String pwrAddress = "";
+		String ethAddress = "";
+		String account = "U" + json.getLong("uid");
 		// 获取所有支持的币种
 		List<Coin> coins = coinService.findAll();
 		for (Coin coin : coins) {
@@ -141,33 +151,53 @@ public class MemberConsumer {
 			wallet.setMemberId(json.getLong("uid"));
 			wallet.setBalance(new BigDecimal(0));
 			wallet.setFrozenBalance(new BigDecimal(0));
-			wallet.setAddress("");
-            if(coin.getEnableRpc() == BooleanEnum.IS_TRUE) {
-                String account = "U" + json.getLong("uid");
-                //远程RPC服务URL,后缀为币种单位
-                String serviceName = "SERVICE-RPC-" + coin.getUnit();
-                try{
-                    String url = "http://" + serviceName + "/rpc/address/{account}";
-                    ResponseEntity<MessageResult> result = restTemplate.getForEntity(url, MessageResult.class, account);
-                    logger.info("remote call:service={},result={}", serviceName, result);
-                    if (result.getStatusCode().value() == 200) {
-                        MessageResult mr = result.getBody();
-                        logger.info("mr={}", mr);
-                        if (mr.getCode() == 0) {
-                            //返回地址成功，调用持久化
-                            String address = (String) mr.getData();
-                            wallet.setAddress(address);
-                        }
-                    }
-                }
-                catch (Exception e){
-                    logger.error("call {} failed,error={}",serviceName,e.getMessage());
-                    wallet.setAddress("");
-                }
-            } else {
-                wallet.setAddress("");
-            }
-            
+			if ((coin.getIsToken().isIs() == true && coin.getChainName().equals("PWR")
+					&& StringUtils.isNotBlank(pwrAddress) == true)
+					|| (coin.getUnit().equals("PWR") && StringUtils.isNotBlank(pwrAddress) == true)) {
+				wallet.setAddress(pwrAddress);
+			} else if ((coin.getIsToken().isIs() == true && coin.getChainName().equals("ETH")
+					&& StringUtils.isNotBlank(ethAddress) == true)
+					|| (coin.getUnit().equals("ETH") && StringUtils.isNotBlank(ethAddress) == true)) {
+				wallet.setAddress(ethAddress);
+			} else {
+				String serviceName = "";
+				if (coin.getEnableRpc() == BooleanEnum.IS_TRUE) {
+					if (coin.getIsToken().isIs() == true && coin.getChainName() != null) {
+						// 远程RPC服务URL,后缀为币种单位
+						serviceName = "SERVICE-RPC-" + coin.getChainName();
+					} else {
+						serviceName = "SERVICE-RPC-" + coin.getUnit();
+					}
+					try {
+						String url = "http://" + serviceName + "/rpc/address/{account}";
+						ResponseEntity<MessageResult> result = restTemplate.getForEntity(url, MessageResult.class,
+								account);
+						logger.info("remote call:service={},result={}", serviceName, result);
+						if (result.getStatusCode().value() == 200) {
+							MessageResult mr = result.getBody();
+							logger.info("mr={}", mr);
+							if (mr.getCode() == 0) {
+								// 返回地址成功，调用持久化
+								String address = (String) mr.getData();
+								wallet.setAddress(address);
+								if ((coin.getIsToken().isIs() == true && coin.getChainName().equals("ETH") == true)
+										|| coin.getUnit().equals("ETH") == true) {
+									ethAddress = address;
+								} else if ((coin.getIsToken().isIs() == true
+										&& coin.getChainName().equals("PWR") == true)
+										|| coin.getUnit().equals("PWR") == true) {
+									pwrAddress = address;
+								}
+							}
+						}
+					} catch (Exception e) {
+						logger.error("call {} failed,error={}", serviceName, e.getMessage());
+						wallet.setAddress("");
+					}
+				} else {
+					wallet.setAddress("");
+				}
+			}
 			// 保存
 			memberWalletService.save(wallet);
 		}
@@ -216,5 +246,4 @@ public class MemberConsumer {
 			memberTransaction = memberTransactionService.save(memberTransaction);
 		}
 	}
-	
 }
