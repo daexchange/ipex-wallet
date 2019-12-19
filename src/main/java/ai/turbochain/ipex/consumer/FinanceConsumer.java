@@ -86,20 +86,15 @@ public class FinanceConsumer {
 					// 远程RPC服务URL,后缀为币种单位
 					serviceName = "SERVICE-RPC-" + coin.getChainName().toUpperCase();
 					url = "http://" + serviceName
-							+ "/rpc/withdraw?address={1}&amount={2}&contractAddress={3}&decimals={4}&coinName={5}";
-					result = restTemplate.getForObject(url, MessageResult.class, json.getString("address"),
-							json.getBigDecimal("arriveAmount"), coin.getTokenAddress(), coin.getDecimals(),
-							coin.getUnit());
-				} else if (coin.getUnit().toUpperCase().equals("BTC")) {
-					serviceName = "SERVICE-RPC-" + coin.getUnit().toUpperCase();
-					url = "http://" + serviceName + "/rpc/withdraw?username={1}&receiveAddr={2}&amount={3}";
+							+ "/rpc/withdraw?username={1}&address={2}&amount={3}&contractAddress={4}&decimals={5}&coinName={6}";
 					result = restTemplate.getForObject(url, MessageResult.class, "U" + json.getLong("uid"),
-							json.getString("receiveAddr"), json.getBigDecimal("arriveAmount"));
+							json.getString("address"), json.getBigDecimal("arriveAmount"), coin.getTokenAddress(),
+							coin.getDecimals(), coin.getUnit());
 				} else {
 					serviceName = "SERVICE-RPC-" + coin.getUnit().toUpperCase();
-					url = "http://" + serviceName + "/rpc/withdraw?address={1}&amount={2}";
-					result = restTemplate.getForObject(url, MessageResult.class, json.getString("address"),
-							json.getBigDecimal("arriveAmount"));
+					url = "http://" + serviceName + "/rpc/withdraw?username={1}&address={2}&amount={3}";
+					result = restTemplate.getForObject(url, MessageResult.class, "U" + json.getLong("uid"),
+							json.getString("address"), json.getBigDecimal("arriveAmount"));
 				}
 				logger.info("=========================rpc 结束================================");
 				logger.info("result = {}", result);
@@ -148,20 +143,15 @@ public class FinanceConsumer {
 					// 远程RPC服务URL,后缀为币种单位
 					serviceName = "SERVICE-RPC-" + coin.getChainName().toUpperCase();
 					url = "http://" + serviceName
-							+ "/rpc/withdraw?address={1}&amount={2}&contractAddress={3}&decimals={4}&coinName={5}";
-					result = restTemplate.getForObject(url, MessageResult.class, json.getString("address"),
-							json.getBigDecimal("arriveAmount"), coin.getTokenAddress(), coin.getDecimals(),
-							coin.getUnit());
-				} else if (coin.getUnit().toUpperCase().equals("BTC")) {
+							+ "/rpc/withdraw?username={1}&address={2}&amount={3}&contractAddress={4}&decimals={5}&coinName={6}";
+					result = restTemplate.getForObject(url, MessageResult.class, "U" + json.getLong("uid"),
+							json.getString("address"), json.getBigDecimal("arriveAmount"), coin.getTokenAddress(),
+							coin.getDecimals(), coin.getUnit());
+				} else {
 					serviceName = "SERVICE-RPC-" + coin.getUnit().toUpperCase();
 					url = "http://" + serviceName + "/rpc/withdraw?username={1}&receiveAddr={2}&amount={3}";
 					result = restTemplate.getForObject(url, MessageResult.class, "U" + json.getLong("uid"),
-							json.getString("receiveAddr"), json.getBigDecimal("arriveAmount"));
-				} else {
-					serviceName = "SERVICE-RPC-" + coin.getUnit().toUpperCase();
-					url = "http://" + serviceName + "/rpc/withdraw?address={1}&amount={2}";
-					result = restTemplate.getForObject(url, MessageResult.class, json.getString("address"),
-							json.getBigDecimal("arriveAmount"));
+							json.getString("address"), json.getBigDecimal("arriveAmount"));
 				}
 				logger.info("=========================rpc 结束================================");
 				logger.info("result = {}", result);
