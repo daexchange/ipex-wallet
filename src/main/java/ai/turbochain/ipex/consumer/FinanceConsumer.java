@@ -101,7 +101,8 @@ public class FinanceConsumer {
 				if (result.getCode() == 0 && result.getData() != null) {
 					logger.info("====================== 处理成功,data为txid更新业务 ==================================");
 					// 处理成功,data为txid，更新业务订单
-					String txid = (String) result.getData();
+					// String txid = (String) result.getData();
+					String txid = ((Double) result.getData()) + "";
 					withdrawRecordService.withdrawSuccess(withdrawId, txid);
 				} else {
 					logger.info("====================== 自动转账失败，转为人工处理 ==================================");
@@ -158,7 +159,7 @@ public class FinanceConsumer {
 				if (result.getCode() == 0 && result.getData() != null) {
 					logger.info("====================== 处理成功,data为txid更新业务 ==================================");
 					// 处理成功,data为txid，更新业务订单
-					String txid = (String) result.getData();
+					String txid = ((Double) result.getData()) + "";
 					withdrawRecordService.withdrawSuccess(withdrawId, txid);
 				} else {
 					logger.info("====================== 提现失败 ==================================");
