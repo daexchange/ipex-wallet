@@ -149,7 +149,7 @@ public class FinanceConsumer {
 							coin.getDecimals(), coin.getUnit());
 				} else {
 					serviceName = "SERVICE-RPC-" + coin.getUnit().toUpperCase();
-					url = "http://" + serviceName + "/rpc/withdraw?username={1}&receiveAddr={2}&amount={3}";
+					url = "http://" + serviceName + "/rpc/withdraw?username={1}&address={2}&amount={3}";
 					result = restTemplate.getForObject(url, MessageResult.class, "U" + json.getLong("uid"),
 							json.getString("address"), json.getBigDecimal("arriveAmount"));
 				}
