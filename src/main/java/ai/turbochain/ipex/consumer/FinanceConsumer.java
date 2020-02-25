@@ -164,7 +164,8 @@ public class FinanceConsumer {
 					withdrawRecordService.withdrawSuccess(withdrawId, txid);
 				} else {
 					logger.info("====================== 提现失败 ==================================");
-					withdrawRecordService.withdrawFailOfHardId(withdrawId);
+					//withdrawRecordService.withdrawFailOfHardId(withdrawId);
+					withdrawRecordService.withdrawFail(withdrawId);
 				}
 			}
 		} catch (Exception e) {
